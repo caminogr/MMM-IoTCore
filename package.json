@@ -1,0 +1,19 @@
+{
+  "name": "mmm-iotcore",
+  "version": "1.0.0",
+  "description": "Show data subscribed to from AWS IoT Core",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "Koki Kaminoura",
+  "license": "MIT",
+  "keywords": [
+    "magicmirror",
+    "AWS IoT Core",
+    "mqtt"
+  ],
+  "dependencies": {
+    "aws-iot-device-sdk-v2": "^1.9.5"
+  }
+}
