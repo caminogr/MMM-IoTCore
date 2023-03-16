@@ -3,13 +3,9 @@ var awsIot = require('aws-iot-device-sdk');
 const NodeHelper = require("node_helper");
 
 module.exports = NodeHelper.create({
-  start: function() {
-    console.log('start')
-  },
+  start: function() {},
   
   socketNotificationReceived: function (notification, payload) {
-    console.log('notification:', notification)
-    console.log('payload:', payload)
     if (notification === "START") {
       const device = awsIot.device({
         keyPath: payload.keyPath,
@@ -18,13 +14,17 @@ module.exports = NodeHelper.create({
         clientId: payload.clientId,
         host: payload.host
       });
-      device.on('connect', function() {
-        console.log('connect');
-        device.subscribe('/#');
+      device.on('connect', () => {
+        payload.subscriptions.forEach(subscription => {
+          device.subscribe(subscription.topic);
+        })
       });
 
-      device.on('message', function(topic, payload) {
-        console.log('message', topic, payload.toString());
+      device.on('message', (topic, mqttPayload) => {
+        this.sendSocketNotification("MQTT_PAYLOAD", {
+          topic,
+          value: mqttPayload.toString() 
+        });
       });
     }
   }
