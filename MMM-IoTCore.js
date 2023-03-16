@@ -1,5 +1,11 @@
 Module.register("MMM-IoTCore", {
-  defaults: {},
+  defaults: {
+    keyPath: "",
+    certPath: "",
+    caPath: "",
+    host: "",
+    subscriptions: [],
+  },
 
   start: function () {
     this.sendSocketNotification("START", this.config);
@@ -9,10 +15,9 @@ Module.register("MMM-IoTCore", {
     Log.info(this.name, ' socketNotificationReceived:')
   },
 
-
-  getDom: function() {
+  getDom: function () {
     var wrapper = document.createElement("div");
-    wrapper.innerHTML = this.config.text;
+    wrapper.innerHTML = "Hello"
     return wrapper;
   }
 });
