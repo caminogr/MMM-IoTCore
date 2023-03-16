@@ -8,12 +8,10 @@ Module.register("MMM-IoTCore", {
   },
 
   start: function () {
-    this.subscriptionsData = this.config.subscriptions.map(s => {
+    this.subscriptions = this.config.subscriptions.map(s => {
       return {
-        topic: s.topic,
-        label: s.label,
+        ...s,
         value: "-",
-        suffix: s.suffix,
       }
     })
 
@@ -25,9 +23,9 @@ Module.register("MMM-IoTCore", {
 
   socketNotificationReceived: function (notification, payload) {
     if (notification === "MQTT_PAYLOAD") {
-      const index = this.subscriptionsData.findIndex(s => s.topic === payload.topic)
+      const index = this.subscriptions.findIndex(s => s.topic === payload.topic)
       if (index !== -1) {
-        this.subscriptionsData[index].value = payload.value
+        this.subscriptions[index].value = payload.value
         this.updateDom();
       }
     }
@@ -39,7 +37,7 @@ Module.register("MMM-IoTCore", {
 
   getDom: function() {
     const wrapper = document.createElement("table");
-    this.subscriptionsData.forEach(s => {
+    this.subscriptions.forEach(s => {
       const trElement = document.createElement("tr");
 
       const labelElement = document.createElement("td");
@@ -49,11 +47,20 @@ Module.register("MMM-IoTCore", {
       const valueElement = document.createElement("td");
       valueElement.className = "value";
       valueElement.innerHTML = s.value;
+      console.log('s.value:', s.value)
       trElement.appendChild(valueElement);
 
       const suffixElement = document.createElement("td");
       suffixElement.innerHTML = s.suffix;
       trElement.appendChild(suffixElement);
+
+      if (s.colors?.length > 0 && s.value !== "-") {
+        let targetColor = s.colors.sort((a,b) => a.upTo - b.upTo)
+          .find(c => c.upTo > s.value) || s.colors[s.colors.length - 1];
+        labelElement.style.color = targetColor.label;
+        valueElement.style.color = targetColor.value;
+        suffixElement.style.color = targetColor.suffix;
+      }
 
       wrapper.appendChild(trElement);
     })
