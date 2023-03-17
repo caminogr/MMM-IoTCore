@@ -1,16 +1,19 @@
+var path = require('path');
 var awsIot = require('aws-iot-device-sdk');
 
 const NodeHelper = require("node_helper");
 
 module.exports = NodeHelper.create({
-  start: function() {},
+  start: function() {
+    this.projectRoot = process.cwd();
+  },
   
   socketNotificationReceived: function (notification, payload) {
     if (notification === "START") {
       const device = awsIot.device({
-        keyPath: payload.keyPath,
-        certPath: payload.certPath,
-        caPath: payload.caPath,
+        keyPath: path.join(this.projectRoot, 'config', payload.keyPath),
+        certPath: path.join(this.projectRoot, 'config', payload.certPath),
+        caPath: path.join(this.projectRoot, 'config', payload.caPath),
         clientId: payload.clientId,
         host: payload.host
       });
